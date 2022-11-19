@@ -1,11 +1,26 @@
-import { Button, Flex, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Text,
+  useDisclosure,
+  VStack,
+} from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import AddQuestionModal from "../../../components/Dashboard/AddQuestionModal";
+import Header from "../../../components/Dashboard/Header";
 import Unauthenticated from "../../../components/Unauthenticated";
-
-const Index = () => {
-  const { status } = useSession();
+import AddQuestion from "../../../components/Dashboard/AddQuestion";
+import ViewQuestions from "../../../components/Dashboard/ViewQuestions";
+import AddUsers from "../../../components/Dashboard/AddUsers";
+import ViewUsers from "../../../components/Dashboard/ViewUsers";
+const Home = () => {
+  const { status, data } = useSession();
   const { onOpen, isOpen, onClose } = useDisclosure();
+  const role =
+    typeof window !== "undefined" ? localStorage.getItem("role") : null;
+
+  console.log(role);
 
   if (status === "loading") {
     return <p>Loading...</p>;
@@ -17,31 +32,17 @@ const Index = () => {
 
   return (
     <>
+      <Header />
       <AddQuestionModal isOpen={isOpen} onClose={onClose} />
-      <Flex justifyContent="center" alignItems="center" h="100vh">
-        <Flex
-          onClick={onOpen}
-          cursor="pointer"
-          justifyContent="center"
-          rounded="md"
-          shadow="lg"
-          bg="gray.200"
-          _hover={{
-            bg: "gray.300",
-            transform: "scale(1.05)",
-            transition: "all 0.2s ease-in-out",
-          }}
-          p={4}
-          m={4}
-          alignItems="center"
-        >
-          <Text fontWeight="bold" fontSize="2xl">
-            Add A Question
-          </Text>
-        </Flex>
+
+      <Flex justifyContent="center" alignItems="center" h="90vh">
+        <AddQuestion onOpen={onOpen} />
+        <ViewQuestions onOpen={onOpen} />
+        {role === "ADMIN" && <AddUsers onOpen={onOpen} />}
+        {role === "ADMIN" && <ViewUsers onOpen={onOpen} />}
       </Flex>
     </>
   );
 };
 
-export default Index;
+export default Home;

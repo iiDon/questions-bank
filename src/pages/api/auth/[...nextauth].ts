@@ -14,9 +14,10 @@ export const authOptions: NextAuthOptions = {
       type: "credentials",
       credentials: {},
       async authorize(credentials, req) {
-        const { email, password } = credentials as {
+        const { email, password, role } = credentials as {
           email: string;
           password: string;
+          role: string;
         };
         const user = await prisma.user.findUnique({
           where: {
@@ -29,6 +30,10 @@ export const authOptions: NextAuthOptions = {
 
         if (user.password !== password) {
           throw new Error("Invalid password");
+        }
+
+        if (user.role !== role) {
+          throw new Error("Invalid role");
         }
 
         return {

@@ -21,11 +21,12 @@
     "@trpc/react-query": "10.0.0-rc.4",
     "@trpc/server": "10.0.0-rc.4",
     "formik": "^2.2.9",
-    "framer-motion": "4",
+    "framer-motion": "6",
     "next": "13.0.2",
     "next-auth": "^4.15.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-icons": "^4.6.0",
     "roboto-fontface": "^0.10.0",
     "superjson": "1.9.1",
     "zod": "^3.18.0"

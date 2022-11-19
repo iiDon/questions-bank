@@ -7,7 +7,11 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  FormControl,
+  FormLabel,
+  Input,
 } from "@chakra-ui/react";
+import { useFormik } from "formik";
 
 export interface Props {
   isOpen: boolean;
@@ -15,31 +19,81 @@ export interface Props {
 }
 
 const AddQuestionModal = ({ isOpen, onClose }: Props) => {
+  const types = ["Multiple Choice", "True/False", "Short Answer"];
+
+  const formik = useFormik({
+    initialValues: {
+      question: "",
+      type: types[0],
+    },
+    onSubmit: (values) => {
+      console.log(values);
+    },
+  });
+
   return (
-    <div>
+    <>
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
-        <ModalContent bgColor={"customDarkBlue"}>
-          <ModalHeader>ِAre you sure?</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>Press yes to create new API Key</ModalBody>
+        <form onSubmit={formik.handleSubmit}>
+          <ModalContent>
+            <ModalHeader>Add A New Question</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <FormControl isRequired>
+                <FormLabel htmlFor="question">Title</FormLabel>
+                <Input
+                  type="text"
+                  id="question"
+                  name="question"
+                  value={formik.values.question}
+                  onChange={formik.handleChange}
+                />
+                <FormLabel htmlFor="type">Type</FormLabel>
+                <Input
+                  type=""
+                  id="question"
+                  name="question"
+                  value={formik.values.question}
+                  onChange={formik.handleChange}
+                />
+                <FormLabel htmlFor="question">Title</FormLabel>
+                <Input
+                  type="text"
+                  id="question"
+                  name="question"
+                  value={formik.values.question}
+                  onChange={formik.handleChange}
+                />
+                <FormLabel htmlFor="question">Title</FormLabel>
+                <Input
+                  type="text"
+                  id="question"
+                  name="question"
+                  value={formik.values.question}
+                  onChange={formik.handleChange}
+                />
+                <FormLabel htmlFor="question">Title</FormLabel>
+                <Input
+                  type="text"
+                  id="question"
+                  name="question"
+                  value={formik.values.question}
+                  onChange={formik.handleChange}
+                />
+              </FormControl>
+            </ModalBody>
 
-          <ModalFooter>
-            <Button
-              bgGradient={
-                "linear-gradient(100.67deg, #1EC69B 29.36%, #1EA5AD 55.47%)"
-              }
-              mr={3}
-            >
-              Yes
-            </Button>
-            <Button variant="ghost" onClick={onClose}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
+            <ModalFooter>
+              <Button mr={3} bg="sky" textColor="white" type="submit">
+                Submit
+              </Button>
+              <Button onClick={onClose}>Close</Button>
+            </ModalFooter>
+          </ModalContent>
+        </form>
       </Modal>
-    </div>
+    </>
   );
 };
 

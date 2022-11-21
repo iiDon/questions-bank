@@ -24,6 +24,7 @@ export const authOptions: NextAuthOptions = {
             email,
           },
         });
+
         if (!user) {
           throw new Error("No user found");
         }
@@ -32,20 +33,33 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid password");
         }
 
-        if (user.role !== role) {
-          throw new Error("Invalid role");
-        }
-
         return {
           id: user.id,
           name: user.name,
           email: user.email,
+          role: user.role,
         };
       },
     }),
   ],
   pages: {
     signIn: "/auth/signin",
+  },
+  callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role!;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+      }
+      return session;
+    },
   },
 };
 

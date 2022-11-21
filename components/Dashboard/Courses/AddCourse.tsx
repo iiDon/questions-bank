@@ -1,36 +1,36 @@
 import { VStack, Flex, useDisclosure, Text } from "@chakra-ui/react";
 import React from "react";
-import { AiOutlineFolderView } from "react-icons/ai";
+import { AiOutlineFolderAdd } from "react-icons/ai";
+import AddCoursesModal from "./AddCoursesModal";
 
-interface Props {
-  onOpen: () => void;
-}
+const AddCourse = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-const ViewUsers = (Props: Props) => {
   return (
-    <VStack mx={8}>
+    <VStack>
+      <AddCoursesModal isOpen={isOpen} onClose={onClose} />
       <Flex
-        onClick={Props.onOpen}
+        onClick={onOpen}
         cursor="pointer"
         justifyContent="center"
         rounded="md"
         shadow="lg"
-        bg="#C9CBCF"
+        bg="green.200"
         _hover={{
-          bg: "#C9CBC2",
+          bg: "green.300",
           transform: "scale(1.05)",
           transition: "all 0.2s ease-in-out",
         }}
         p={4}
         alignItems="center"
       >
-        <AiOutlineFolderView size="3rem" />
+        <AiOutlineFolderAdd size="3rem" />
       </Flex>
       <Text fontSize="lg" textColor="white" textAlign="center">
-        View Users
+        Add A Course
       </Text>
     </VStack>
   );
 };
 
-export default ViewUsers;
+export default AddCourse;

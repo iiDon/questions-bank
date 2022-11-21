@@ -5,7 +5,6 @@ import { useEffect } from "react";
 
 const Home: NextPage = () => {
   // if user is logged in, redirect to dashboard
-  const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {

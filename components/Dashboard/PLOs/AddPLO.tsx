@@ -1,36 +1,37 @@
 import { VStack, Flex, useDisclosure, Text } from "@chakra-ui/react";
 import React from "react";
-import { AiOutlineFolderView } from "react-icons/ai";
+import { AiOutlineFolderAdd } from "react-icons/ai";
+import AddPLOsModal from "./AddPLOsModal";
+import AddTypeModal from "../Types/AddTypeModal";
 
-interface Props {
-  onOpen: () => void;
-}
+const AddPLO = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-const ViewQuestions = (Props: Props) => {
   return (
-    <VStack mx={8}>
+    <VStack>
+      <AddPLOsModal isOpen={isOpen} onClose={onClose} />
       <Flex
-        onClick={Props.onOpen}
+        onClick={onOpen}
         cursor="pointer"
         justifyContent="center"
         rounded="md"
         shadow="lg"
-        bg="#4BC0C0"
+        bg="#C9CBCF"
         _hover={{
-          bg: "#4BC0f0",
+          bg: "#C9CBC2",
           transform: "scale(1.05)",
           transition: "all 0.2s ease-in-out",
         }}
         p={4}
         alignItems="center"
       >
-        <AiOutlineFolderView size="3rem" />
+        <AiOutlineFolderAdd size="3rem" />
       </Flex>
       <Text fontSize="lg" textColor="white" textAlign="center">
-        View Questions
+        Add A PLO
       </Text>
     </VStack>
   );
 };
 
-export default ViewQuestions;
+export default AddPLO;

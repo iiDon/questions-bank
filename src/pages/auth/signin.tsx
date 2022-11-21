@@ -20,20 +20,17 @@ const Signin = () => {
   const router = useRouter();
   const { status } = useSession();
   const toast = useToast();
-  const [role, setRole] = React.useState("USER");
+
 
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
-      role: role,
     },
     onSubmit: async (values) => {
-      values.role = role;
       const res: SignInResponse | undefined = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        role: values.role,
         redirect: false,
       });
       console.log(res);
@@ -56,7 +53,6 @@ const Signin = () => {
           duration: 5000,
           isClosable: true,
         });
-        localStorage.setItem("role", values.role);
         router.push("/");
       }
     },
@@ -69,7 +65,7 @@ const Signin = () => {
   if (status === "authenticated") {
     router.push("/dashboard");
   }
-  console.log(role);
+  // console.log(role);
 
   return (
     <Flex justifyContent="center" alignItems="center" h="100vh">
@@ -104,17 +100,6 @@ const Signin = () => {
               onChange={formik.handleChange}
               mb={5}
             />
-
-            <RadioGroup onChange={setRole} defaultValue={role} mb={5}>
-              <Flex justifyContent="space-around">
-                <Radio colorScheme="blue" value="USER">
-                  Faculty
-                </Radio>
-                <Radio colorScheme="blue" value="ADMIN">
-                  Admin
-                </Radio>
-              </Flex>
-            </RadioGroup>
 
             <Button
               _hover={{ bg: "blue.800" }}

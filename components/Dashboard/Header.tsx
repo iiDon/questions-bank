@@ -1,4 +1,4 @@
-import { Button, Flex, Text } from "@chakra-ui/react";
+import { Button, Flex, Image, Text, VStack } from "@chakra-ui/react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import React from "react";
@@ -27,7 +27,7 @@ const Header = () => {
       <Text>
         {session?.user?.name} ({session?.user?.email})
       </Text>
-
+      <Image src="/logo.png" w="150px" />
       <Text as="b">Questions Bank System</Text>
 
       <Button onClick={handleSignOut} bg="sky" textColor="white">

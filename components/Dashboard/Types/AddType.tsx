@@ -1,23 +1,23 @@
 import { VStack, Flex, useDisclosure, Text } from "@chakra-ui/react";
 import React from "react";
 import { AiOutlineFolderAdd } from "react-icons/ai";
+import AddTypeModal from "./AddTypeModal";
 
-interface Props {
-  onOpen: () => void;
-}
+const AddType = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-const AddQuestion = (Props: Props) => {
   return (
-    <VStack mx={8}>
+    <VStack>
+      <AddTypeModal isOpen={isOpen} onClose={onClose} />
       <Flex
-        onClick={Props.onOpen}
+        onClick={onOpen}
         cursor="pointer"
         justifyContent="center"
         rounded="md"
         shadow="lg"
-        bg="#FF9F40"
+        bg="yellow.100"
         _hover={{
-          bg: "#FF9F70",
+          bg: "yellow.200",
           transform: "scale(1.05)",
           transition: "all 0.2s ease-in-out",
         }}
@@ -27,10 +27,10 @@ const AddQuestion = (Props: Props) => {
         <AiOutlineFolderAdd size="3rem" />
       </Flex>
       <Text fontSize="lg" textColor="white" textAlign="center">
-        Add A Question
+        Add A Type
       </Text>
     </VStack>
   );
 };
 
-export default AddQuestion;
+export default AddType;

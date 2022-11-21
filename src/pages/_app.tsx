@@ -12,11 +12,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   return (
-      <ChakraProvider theme={theme}>
     <SessionProvider session={session}>
+      <ChakraProvider theme={theme}>
         <Component {...pageProps} />
-    </SessionProvider>
       </ChakraProvider>
+    </SessionProvider>
   );
 };
 

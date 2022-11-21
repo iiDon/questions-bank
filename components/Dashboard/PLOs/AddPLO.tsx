@@ -2,7 +2,6 @@ import { VStack, Flex, useDisclosure, Text } from "@chakra-ui/react";
 import React from "react";
 import { AiOutlineFolderAdd } from "react-icons/ai";
 import AddPLOsModal from "./AddPLOsModal";
-import AddTypeModal from "../Types/AddTypeModal";
 
 const AddPLO = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -14,7 +13,7 @@ const AddPLO = () => {
         onClick={onOpen}
         cursor="pointer"
         justifyContent="center"
-        rounded="md"
+        rounded="xl"
         shadow="lg"
         bg="#C9CBCF"
         _hover={{

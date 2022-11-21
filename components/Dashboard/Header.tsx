@@ -1,19 +1,19 @@
-import { Button, Flex, Image, Text, VStack } from "@chakra-ui/react";
+import { Button, Flex, Image, Text } from "@chakra-ui/react";
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/router";
+import Link from "next/link";
 import React from "react";
 
 const Header = () => {
   const { data: session } = useSession();
-  const router = useRouter();
 
   const handleSignOut = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
-    localStorage.removeItem("role");
-    signOut();
-    router.push("/auth/signin");
+    signOut({
+      redirect: true,
+      callbackUrl: "/auth/signin",
+    });
   };
 
   return (
@@ -27,7 +27,7 @@ const Header = () => {
       <Text>
         {session?.user?.name} ({session?.user?.email})
       </Text>
-      <Image src="/logo.png" w="150px" />
+      <Link href='/dashboard'><Image src="/logo.png" alt="SRU" w="150px" /></Link>
       <Text as="b">Questions Bank System</Text>
 
       <Button onClick={handleSignOut} bg="sky" textColor="white">

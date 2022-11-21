@@ -10,7 +10,7 @@ const ViewTypes = () => {
         <Flex
           cursor="pointer"
           justifyContent="center"
-          rounded="md"
+          rounded="xl"
           shadow="lg"
           bg="yellow.100"
           _hover={{

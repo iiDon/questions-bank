@@ -21,7 +21,7 @@ const AddUsers = () => {
         onClick={onOpen}
         cursor="pointer"
         justifyContent="center"
-        rounded="md"
+        rounded="xl"
         shadow="lg"
         bg="#FF6384"
         _hover={{

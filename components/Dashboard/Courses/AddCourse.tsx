@@ -13,7 +13,7 @@ const AddCourse = () => {
         onClick={onOpen}
         cursor="pointer"
         justifyContent="center"
-        rounded="md"
+        rounded="xl"
         shadow="lg"
         bg="green.200"
         _hover={{

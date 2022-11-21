@@ -1,4 +1,4 @@
-import { VStack, Flex, useDisclosure, Text } from "@chakra-ui/react";
+import { VStack, Flex, Text } from "@chakra-ui/react";
 import React from "react";
 import { AiOutlineFolderAdd } from "react-icons/ai";
 
@@ -13,7 +13,7 @@ const AddQuestion = (Props: Props) => {
         onClick={Props.onOpen}
         cursor="pointer"
         justifyContent="center"
-        rounded="md"
+        rounded="xl"
         shadow="lg"
         bg="#FF9F40"
         _hover={{

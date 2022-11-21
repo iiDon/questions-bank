@@ -13,7 +13,7 @@ const AddType = () => {
         onClick={onOpen}
         cursor="pointer"
         justifyContent="center"
-        rounded="md"
+        rounded="xl"
         shadow="lg"
         bg="yellow.100"
         _hover={{

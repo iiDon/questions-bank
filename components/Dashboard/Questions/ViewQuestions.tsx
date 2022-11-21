@@ -1,4 +1,4 @@
-import { VStack, Flex, useDisclosure, Text } from "@chakra-ui/react";
+import { VStack, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import React from "react";
 import { AiOutlineFolderView } from "react-icons/ai";
@@ -11,7 +11,7 @@ const ViewQuestions = () => {
         <Flex
           cursor="pointer"
           justifyContent="center"
-          rounded="md"
+          rounded="xl"
           shadow="lg"
           bg="#FF9F40"
           _hover={{

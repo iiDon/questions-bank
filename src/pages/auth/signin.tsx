@@ -31,9 +31,10 @@ const Signin = () => {
       const res: SignInResponse | undefined = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        redirect: false,
+        redirect: true,
+        callbackUrl: "/dashboard",
       });
-      console.log(res);
+
       if (!res?.ok) {
         toast({
           position: "top",
@@ -53,7 +54,6 @@ const Signin = () => {
           duration: 5000,
           isClosable: true,
         });
-        router.push("/");
       }
     },
   });
@@ -65,8 +65,6 @@ const Signin = () => {
   if (status === "authenticated") {
     router.push("/dashboard");
   }
-  // console.log(role);
-
   return (
     <Flex justifyContent="center" alignItems="center" h="100vh">
       <VStack bg="gray.200" w="30rem" p={5} rounded="md" shadow="lg">

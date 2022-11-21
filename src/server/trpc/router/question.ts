@@ -3,14 +3,28 @@ import { z } from "zod";
 import { router, publicProcedure } from "../trpc";
 
 export const questionRouter = router({
-  getAll: publicProcedure.query(({ ctx }) => {
+  getAll: publicProcedure.query(async ({ ctx }) => {
     if (!ctx.session?.user) {
       throw new Error("You must be logged in to get all courses");
     }
 
+    if (ctx.session.user.role !== "ADMIN") {
+      const question = await ctx.prisma.question.findMany({
+        where: {
+          userId: ctx.session.user.id,
+        },
+        include: {
+          user: true,
+          course: true,
+          PLOs: true,
+          type: true,
+        },
+      });
+      return question.reverse();
+    }
     // get all questions with all courses details
 
-    return ctx.prisma.question.findMany({
+    const questions = await ctx.prisma.question.findMany({
       include: {
         course: true,
         PLOs: true,
@@ -18,6 +32,9 @@ export const questionRouter = router({
         user: true,
       },
     });
+
+    // reverse the order of the questions
+    return questions.reverse();
   }),
   createQuestion: publicProcedure
     .input(

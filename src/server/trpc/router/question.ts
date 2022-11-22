@@ -55,7 +55,6 @@ export const questionRouter = router({
         throw new Error("You must be logged in to create a course");
       }
 
-      console.log(ctx.session?.user?.id, " iD");
       const { course, PLOs, CLOs, type, question } = input;
 
       const Q = await ctx.prisma.question.create({
@@ -76,8 +75,6 @@ export const questionRouter = router({
           question: question,
         },
       });
-
-      // console.log(Q);
 
       return Q;
     }),
@@ -185,5 +182,41 @@ export const questionRouter = router({
       });
 
       return course;
+    }),
+  deleteManyQuestions: publicProcedure
+    .input(
+      z.object({
+        ids: z.array(z.string()),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      if (!ctx.session?.user) {
+        throw new Error("You must be logged in to get all courses");
+      }
+
+      if (ctx.session.user.role !== "ADMIN") {
+        const question = await ctx.prisma.question.deleteMany({
+          where: {
+            userId: ctx.session.user.id,
+            id: {
+              in: input.ids,
+            },
+          },
+        });
+
+        return question;
+      }
+
+      const { ids } = input;
+
+      const question = await ctx.prisma.question.deleteMany({
+        where: {
+          id: {
+            in: ids,
+          },
+        },
+      });
+
+      return question;
     }),
 });

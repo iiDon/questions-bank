@@ -1,4 +1,11 @@
-import { VStack, Flex, useDisclosure, Text } from "@chakra-ui/react";
+import {
+  VStack,
+  Flex,
+  useDisclosure,
+  Text,
+  useToast,
+  useControllableState,
+} from "@chakra-ui/react";
 import React from "react";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { trpc } from "../../../src/utils/trpc";
@@ -7,10 +14,28 @@ import AddUserModal from "./AddUserModal";
 const AddUsers = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { data: session } = trpc.auth.getSession.useQuery();
-  console.log(session);
+  const toast = useToast();
   const createUser = trpc.auth.register.useMutation({
     onSuccess: () => {
-      console.log("Created User");
+      toast({
+        position: "top",
+        title: "User created",
+        description: "User has been created successfully",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      onClose();
+    },
+    onError: () => {
+      toast({
+        position: "top",
+        title: "Error",
+        description: createUser.error?.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     },
   });
 

@@ -50,7 +50,7 @@ const Home = () => {
             <AddQuestion onOpen={onOpen} />
           </GridItem>
           <GridItem>
-            <ViewQuestions onOpen={onOpen} />
+            <ViewQuestions />
           </GridItem>
           {session?.user?.role === "ADMIN" && (
             <GridItem>

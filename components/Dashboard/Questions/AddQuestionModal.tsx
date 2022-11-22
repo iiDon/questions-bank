@@ -27,6 +27,7 @@ const AddQuestionModal = ({ isOpen, onClose }: Props) => {
   const { data: PLOs } = trpc.plos.getAll.useQuery();
   const { data: courses } = trpc.course.getAll.useQuery();
   const { data: types } = trpc.type.getAll.useQuery();
+  const { data, refetch } = trpc.question.getAll.useQuery();
   const createQuestion = trpc.question.createQuestion.useMutation({
     onSuccess: () => {
       toast({
@@ -37,6 +38,7 @@ const AddQuestionModal = ({ isOpen, onClose }: Props) => {
         duration: 3000,
         isClosable: true,
       });
+      refetch();
       onClose();
     },
     onError: () => {
@@ -60,7 +62,6 @@ const AddQuestionModal = ({ isOpen, onClose }: Props) => {
       question: "",
     },
     onSubmit: (values) => {
-      console.log(values);
       createQuestion.mutate(values);
       formik.resetForm();
       onClose();

@@ -23,7 +23,7 @@ const DeleteOneModal = ({
     id
 }: Props) => {
     const toast = useToast();
-    const { refetch } = trpc.question.getAll.useQuery();
+    const { refetch } = trpc.question.getAll.useQuery({});
     const deleteOne = trpc.question.deleteQuestion.useMutation({
         onSuccess: () => {
             toast({

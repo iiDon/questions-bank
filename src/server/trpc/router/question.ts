@@ -3,39 +3,56 @@ import { z } from "zod";
 import { router, publicProcedure } from "../trpc";
 
 export const questionRouter = router({
-  getAll: publicProcedure.query(async ({ ctx }) => {
-    if (!ctx.session?.user) {
-      throw new Error("You must be logged in to get all courses");
-    }
+  getAll: publicProcedure
+    .input(
+      z.object({
+        PLOs: z.string().optional(),
+        Types: z.string().optional(),
+        Courses: z.string().optional(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      if (!ctx.session?.user) {
+        throw new Error("You must be logged in to get all courses");
+      }
 
-    if (ctx.session.user.role !== "ADMIN") {
-      const question = await ctx.prisma.question.findMany({
+      if (ctx.session.user.role !== "ADMIN") {
+        const question = await ctx.prisma.question.findMany({
+          where: {
+            userId: ctx.session.user.id,
+            PLOsId: input.PLOs ? input.PLOs : undefined,
+            typeId: input.Types ? input.Types : undefined,
+            courseId: input.Courses ? input.Courses : undefined,
+          },
+          include: {
+            user: true,
+            course: true,
+            PLOs: true,
+            type: true,
+          },
+        });
+        return question.reverse();
+      }
+
+      // get all questions with all courses details
+
+      const questions = await ctx.prisma.question.findMany({
         where: {
-          userId: ctx.session.user.id,
+          PLOsId: input.PLOs ? input.PLOs : undefined,
+          typeId: input.Types ? input.Types : undefined,
+          courseId: input.Courses ? input.Courses : undefined,
         },
         include: {
-          user: true,
           course: true,
           PLOs: true,
           type: true,
+          user: true,
         },
       });
-      return question.reverse();
-    }
-    // get all questions with all courses details
 
-    const questions = await ctx.prisma.question.findMany({
-      include: {
-        course: true,
-        PLOs: true,
-        type: true,
-        user: true,
-      },
-    });
-
-    // reverse the order of the questions
-    return questions.reverse();
-  }),
+      // reverse the order of the questions
+      return questions.reverse();
+    }),
   createQuestion: publicProcedure
     .input(
       z.object({

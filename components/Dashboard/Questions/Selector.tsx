@@ -4,6 +4,7 @@ import Select from 'react-select';
 interface Props {
     options: any;
     placeholder: string;
+    setter: React.Dispatch<React.SetStateAction<string>>
 }
 
 
@@ -15,11 +16,14 @@ const Selector = (Props: Props) => {
         };
     });
 
-    console.log(Props.options);
+    const handleChange = (selectedOption: any) => {
+        Props.setter(selectedOption?.value);
+    };
 
     return (
         <Box ml={2}>
             <Select
+                onChange={handleChange}
                 placeholder={Props.placeholder}
                 isClearable={true}
                 isSearchable={true}

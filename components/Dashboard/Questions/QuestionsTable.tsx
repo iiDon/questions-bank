@@ -45,7 +45,15 @@ const QuestionsTable = () => {
   const { data: Types } = trpc.type.getAll.useQuery();
   const { data: Courses } = trpc.course.getAll.useQuery();
 
-  const { data: questions, refetch } = trpc.question.getAll.useQuery();
+  const [filterPlos, setFilterPlos] = React.useState("");
+  const [filterTypes, setFilterTypes] = React.useState("");
+  const [filterCourses, setFilterCourses] = React.useState("");
+
+  const { data: questions, refetch } = trpc.question.getAll.useQuery({
+    PLOs: filterPlos,
+    Types: filterTypes,
+    Courses: filterCourses,
+  })
   const length = questions?.length;
   const createManyQ = trpc.question.createManyQuestions.useMutation({
     onSuccess: () => {
@@ -53,7 +61,6 @@ const QuestionsTable = () => {
       refetch();
     },
   });
-
 
   const [selected, setSelected] = React.useState<string[]>([]);
 
@@ -144,12 +151,9 @@ const QuestionsTable = () => {
           >
             Delete
           </Button>
-          <Selector placeholder="PLOs" options={PLOs} />
-          <Selector placeholder="Types" options={Types} />
-          <Selector placeholder="Courses" options={Courses} />
-          <Button shadow="md" ml={2} >
-            Search
-          </Button>
+          <Selector placeholder="PLOs" options={PLOs} setter={setFilterPlos} />
+          <Selector placeholder="Types" options={Types} setter={setFilterTypes}/>
+          <Selector placeholder="Courses" options={Courses} setter={setFilterCourses}/>
         </Flex>
 
 
@@ -204,7 +208,7 @@ const QuestionsTable = () => {
                       <AiFillDelete size={24} color='red' />
                     </Box>
                     <Box _hover={{ bg: "gray.200" }} p={1} >
-                      <MdViewWeek size={24} color="#5E91F8"/>
+                      <MdViewWeek size={24} color="#5E91F8" />
                     </Box>
                   </Flex>
                 </Td>

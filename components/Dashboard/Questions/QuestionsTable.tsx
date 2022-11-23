@@ -24,13 +24,20 @@ import * as XLSX from 'xlsx'
 import Link from "next/link";
 import Selector from "./Selector";
 import { AiFillDelete } from 'react-icons/ai'
-import {MdViewWeek} from 'react-icons/md'
+import { MdViewWeek } from 'react-icons/md'
+import DeleteOneModal from "./DeleteOneModal";
 const QuestionsTable = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [modalId, setModalId] = React.useState("");
   const {
     isOpen: isOpenD,
     onOpen: onOpenD,
     onClose: onCloseD,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenDO,
+    onOpen: onOpenDO,
+    onClose: onCloseDO,
   } = useDisclosure();
   const [sliceStart, setSliceStart] = React.useState(0);
   const [sliceEnd, setSliceEnd] = React.useState(10);
@@ -112,6 +119,7 @@ const QuestionsTable = () => {
         questions={selected}
         setQuestions={setSelected}
       />
+      <DeleteOneModal isOpen={isOpenDO} onClose={onCloseDO} id={modalId} />
       <Flex w="100%" justifyContent='space-between'>
         <Flex>
           <Button shadow="md" onClick={onOpen}>
@@ -189,11 +197,14 @@ const QuestionsTable = () => {
                 <Td>{question.course.name}</Td>
                 <Td w="auto">
                   <Flex justifyContent='space-between'>
-                    <Box _hover={{ bg: "gray.100" }} p={1} rounded='md'>
+                    <Box _hover={{ bg: "gray.100" }} p={1} rounded='md' onClick={() => {
+                      setModalId(question.id)
+                      onOpenDO()
+                    }}>
                       <AiFillDelete size={24} color='red' />
                     </Box>
-                    <Box _hover={{ bg: "gray.200" }} p={1}>
-                      <MdViewWeek size={24} />
+                    <Box _hover={{ bg: "gray.200" }} p={1} >
+                      <MdViewWeek size={24} color="#5E91F8"/>
                     </Box>
                   </Flex>
                 </Td>

@@ -138,7 +138,7 @@ export const questionRouter = router({
         id: z.string(),
       })
     )
-    .mutation(({ input, ctx }) => {
+    .mutation(async ({ input, ctx }) => {
       if (!input) {
         throw new Error("Invalid input");
       }
@@ -151,12 +151,13 @@ export const questionRouter = router({
       //   throw new Error("You must be an admin to delete a question");
       // }
 
-      const userCreator = ctx.prisma.question.findUnique({
+      // get the user who created the question
+      const userCreator = await ctx.prisma.question.findUnique({
         where: {
           id: input.id,
         },
         select: {
-          user: true,
+          userId: true,
         },
       });
 
@@ -164,13 +165,8 @@ export const questionRouter = router({
         throw new Error("Invalid question");
       }
 
-      if (
-        userCreator.user.name !== ctx.session.user.id &&
-        ctx.session.user.role !== "ADMIN"
-      ) {
-        throw new Error(
-          "You must be the creator or an admin to delete a question"
-        );
+      if (userCreator.userId !== ctx.session.user.id) {
+        throw new Error("You can only delete your own questions");
       }
 
       const { id } = input;
@@ -240,8 +236,8 @@ export const questionRouter = router({
         throw new Error("You must be logged in to create a course");
       }
 
-      const questions = input
-      console.log(questions)
+      const questions = input;
+      console.log(questions);
       for (let question = 0; question < questions.length; question++) {
         // check if the course exists
         const course = await ctx.prisma.course.findFirst({

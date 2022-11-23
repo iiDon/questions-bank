@@ -1,4 +1,4 @@
-import { Flex, Grid, GridItem, useDisclosure } from "@chakra-ui/react";
+import { Box, Flex, Grid, GridItem, useDisclosure } from "@chakra-ui/react";
 import { getSession, useSession } from "next-auth/react";
 import AddQuestionModal from "../../../components/Dashboard/Questions/AddQuestionModal";
 import Header from "../../../components/Dashboard/Header";
@@ -30,6 +30,22 @@ const Home = () => {
     <>
       <Header />
       <AddQuestionModal isOpen={isOpen} onClose={onClose} />
+      {/* <Box
+        position="absolute"
+        objectFit="cover"
+        width="100%"
+        controls={false}
+        height="100%"
+        zIndex={-1}
+        as="video"
+        src="/vid/video.mp4"
+        opacity={1}
+        autoPlay
+        loop
+        muted
+        playsInline
+        filter="brightness(30%)"
+      /> */}
 
       <Flex justifyContent="center" alignItems="center" h="90vh">
         <Grid

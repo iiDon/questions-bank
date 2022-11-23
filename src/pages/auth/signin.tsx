@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Flex,
   FormControl,
@@ -67,6 +68,22 @@ const Signin = () => {
   }
   return (
     <Flex justifyContent="center" alignItems="center" h="100vh">
+      <Box
+        position="absolute"
+        objectFit="cover"
+        width="100%"
+        controls={false}
+        height="100%"
+        zIndex={-1}
+        as="video"
+        src="/vid/video.mp4"
+        opacity={1}
+        autoPlay
+        loop
+        muted
+        playsInline
+        filter="brightness(40%)"
+      />
       <VStack bg="gray.200" w="30rem" p={5} rounded="md" shadow="lg">
         <Image src="/logo.png" alt="logo" w="15rem" />
         <Text fontSize="2xl" fontWeight="bold" py={5}>

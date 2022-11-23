@@ -31,7 +31,7 @@ const Signin = () => {
       const res: SignInResponse | undefined = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        redirect: true,
+        redirect: false,
         callbackUrl: "/dashboard",
       });
 

@@ -7,20 +7,20 @@ import {
   Tbody,
   Td,
   Checkbox,
-  Input,
   VStack,
   Button,
   Flex,
   useDisclosure,
-  useToast,
+  Input,
+  FormLabel,
 } from "@chakra-ui/react";
 import React from "react";
 import { trpc } from "../../../src/utils/trpc";
 import AddQuestionModal from "./AddQuestionModal";
 import DeleteQuestionModal from "./DeleteQuestionModal";
+import * as XLSX from 'xlsx'
 
 const QuestionsTable = () => {
-  const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isOpenD,
@@ -28,9 +28,27 @@ const QuestionsTable = () => {
     onClose: onCloseD,
   } = useDisclosure();
   const [search, setSearch] = React.useState("");
-  const { data: questions } = trpc.question.getAll.useQuery();
+  const { data: questions, refetch } = trpc.question.getAll.useQuery();
+  const createManyQ = trpc.question.createManyQuestions.useMutation({
+    onSuccess: () => {
+      console.log("success");
+      refetch();
+    },
+  });
+
 
   const [selected, setSelected] = React.useState<string[]>([]);
+
+  const dataExport = questions?.map((question) => {
+    return {
+      Question: question.question,
+      CLOs: question.CLOs,
+      PLOs: question.PLOs?.name,
+      Types: question.type.name,
+      Courses: question.course.name,
+
+    };
+  });
 
   const handleSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
@@ -40,6 +58,39 @@ const QuestionsTable = () => {
       setSelected(selected.filter((item) => item !== value));
     }
   };
+
+  const handleExport = () => {
+    const wb = XLSX.utils.book_new();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const ws = XLSX.utils.json_to_sheet(dataExport!);
+    XLSX.utils.book_append_sheet(wb, ws, "Questions");
+    XLSX.writeFile(wb, "Questions.xlsx");
+  };
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // read file
+    const file = e.target.files?.[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = e.target?.result;
+      const workbook = XLSX.read(data, { type: "binary" });
+      const wsname = workbook.SheetNames[0];
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const ws = workbook.Sheets[wsname!];
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dataParse: any = XLSX.utils.sheet_to_json(ws!, { header: 2 });
+      console.log(dataParse);
+      createManyQ.mutateAsync(dataParse);
+    };
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    reader.readAsBinaryString(file!);
+
+
+  };
+
+
+
+
 
   return (
     <VStack w="90%">
@@ -54,16 +105,21 @@ const QuestionsTable = () => {
         <Button shadow="md" onClick={onOpen}>
           Add A Question
         </Button>
-        <Button shadow="md" ml={8}>
+
+        <Input disabled={createManyQ.isLoading} type="file" id="file" display='none' onChange={handleImport} />
+        <FormLabel htmlFor="file" rounded="md" p={2} shadow="md" bg="gray.100" mx={2} cursor="pointer" _hover={{ bg: "gray.200" }}>
           Import
-        </Button>
-        <Button shadow="md" ml={8}>
+        </FormLabel>
+
+
+        <Button shadow="md" ml={2} onClick={handleExport}>
           Export
         </Button>
+
         <Button
           isDisabled={selected.length <= 0}
           shadow="md"
-          ml={8}
+          ml={2}
           colorScheme={"red"}
           onClick={onOpenD}
         >
@@ -79,7 +135,8 @@ const QuestionsTable = () => {
               <Th>CLO</Th>
               <Th>PLO</Th>
               <Th>Type</Th>
-              <Th>User</Th>
+              <Th>Course</Th>
+              <Th>Created At</Th>
               <Th>Actions</Th>
             </Tr>
           </Thead>
@@ -120,7 +177,11 @@ const QuestionsTable = () => {
                   <Td>{question.CLOs}</Td>
                   <Td>{question.PLOs?.name}</Td>
                   <Td>{question.type.name}</Td>
-                  <Td>{question.user.name}</Td>
+                  <Td>{question.course.name}</Td>
+                  <Td>{new Date(question.createdAt).getFullYear().toString() + "-"
+                    + new Date(question.createdAt).getMonth().toString() + "-"
+                    + new Date(question.createdAt).getDay().toString()}
+                  </Td>
                   <Td></Td>
                 </Tr>
               ))}

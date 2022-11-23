@@ -219,4 +219,87 @@ export const questionRouter = router({
 
       return question;
     }),
+  createManyQuestions: publicProcedure
+    .input(
+      z.array(
+        z.object({
+          CLOs: z.string(),
+          Courses: z.string(),
+          PLOs: z.string(),
+          Types: z.string(),
+          Question: z.string(),
+        })
+      )
+    )
+    .mutation(async ({ input, ctx }) => {
+      if (!input) {
+        throw new Error("Invalid input");
+      }
+
+      if (!ctx.session?.user) {
+        throw new Error("You must be logged in to create a course");
+      }
+
+      const questions = input
+      console.log(questions)
+      for (let question = 0; question < questions.length; question++) {
+        // check if the course exists
+        const course = await ctx.prisma.course.findFirst({
+          where: {
+            name: questions[question]?.Courses || "",
+          },
+        });
+
+        if (!course) {
+          throw new Error("Invalid course");
+        }
+
+        const courseId = course.id;
+
+        // check if the PLO exists
+        const PLO = await ctx.prisma.pLOs.findFirst({
+          where: {
+            name: questions[question]?.PLOs,
+          },
+        });
+
+        if (!PLO) {
+          throw new Error("Invalid PLO");
+        }
+
+        const PLOId = PLO.id;
+
+        // check if the type exists
+        const type = await ctx.prisma.type.findFirst({
+          where: {
+            name: questions[question]?.Types,
+          },
+        });
+
+        if (!type) {
+          throw new Error("Invalid type");
+        }
+
+        const typeId = type.id;
+
+        await ctx.prisma.question.create({
+          data: {
+            user: {
+              connect: { id: ctx.session.user.id },
+            },
+            course: {
+              connect: { id: courseId },
+            },
+            PLOs: {
+              connect: { id: PLOId },
+            },
+            type: {
+              connect: { id: typeId },
+            },
+            CLOs: questions[question]?.CLOs || "",
+            question: questions[question]?.Question || "",
+          },
+        });
+      }
+    }),
 });

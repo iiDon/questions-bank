@@ -45,9 +45,9 @@ const QuestionsTable = () => {
   const { data: Types } = trpc.type.getAll.useQuery();
   const { data: Courses } = trpc.course.getAll.useQuery();
 
-  const [filterPlos, setFilterPlos] = React.useState("");
-  const [filterTypes, setFilterTypes] = React.useState("");
-  const [filterCourses, setFilterCourses] = React.useState("");
+  const [filterPlos, setFilterPlos] = React.useState<string | undefined>(undefined);
+  const [filterTypes, setFilterTypes] = React.useState<string | undefined>(undefined);
+  const [filterCourses, setFilterCourses] = React.useState<string | undefined>(undefined);
 
   const { data: questions, refetch } = trpc.question.getAll.useQuery({
     PLOs: filterPlos,
@@ -61,6 +61,7 @@ const QuestionsTable = () => {
       refetch();
     },
   });
+
 
   const [selected, setSelected] = React.useState<string[]>([]);
 
@@ -152,8 +153,8 @@ const QuestionsTable = () => {
             Delete
           </Button>
           <Selector placeholder="PLOs" options={PLOs} setter={setFilterPlos} />
-          <Selector placeholder="Types" options={Types} setter={setFilterTypes}/>
-          <Selector placeholder="Courses" options={Courses} setter={setFilterCourses}/>
+          <Selector placeholder="Types" options={Types} setter={setFilterTypes} />
+          <Selector placeholder="Courses" options={Courses} setter={setFilterCourses} />
         </Flex>
 
 
@@ -216,6 +217,11 @@ const QuestionsTable = () => {
             ))}
           </Tbody>
         </Table>
+        {
+          length === 0 && <Text my={16} ml={2} textAlign='center' fontWeight='bold' fontSize='xl'>
+            There is no question to show
+          </Text>
+        }
         <Flex w="100%" my={2} justifyContent="center" alignItems='center'>
           <Button bg="sky" color="white" mx={2} w={24} onClick={() => {
             if (sliceStart > 0) {
@@ -225,7 +231,10 @@ const QuestionsTable = () => {
           }}>
             Previous
           </Button>
-          {length! > 0 && <Text>{sliceStart + 1} - {sliceEnd} of {questions?.length}</Text>}
+          {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          length! > 0 && <Text>{sliceStart + 1} - {sliceEnd} of {questions?.length}</Text>
+          }
           <Button bg="sky" color="white" mx={2} w={24} onClick={() => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             if (sliceEnd < length!) {

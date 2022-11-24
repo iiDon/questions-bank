@@ -1,7 +1,7 @@
 import { VStack } from "@chakra-ui/react";
 import React from "react";
 import Header from "../../../components/Dashboard/Header";
-import QuestionsTable from "../../../components/Dashboard/Questions/QuestionsTable";
+import QuestionsTable from "../../../components/Dashboard/Questions/QuestionsTable/QuestionsTable";
 
 const Questions = () => {
   return (

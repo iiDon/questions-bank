@@ -5,11 +5,13 @@ import { router, publicProcedure } from "../trpc";
 export const questionRouter = router({
   getAll: publicProcedure
     .input(
-      z.object({
-        PLOs: z.string().optional(),
-        Types: z.string().optional(),
-        Courses: z.string().optional(),
-      })
+      z
+        .object({
+          PLOs: z.string().optional(),
+          Types: z.string().optional(),
+          Courses: z.string().optional(),
+        })
+        .nullish()
     )
     .query(async ({ input, ctx }) => {
       if (!ctx.session?.user) {
@@ -20,9 +22,9 @@ export const questionRouter = router({
         const question = await ctx.prisma.question.findMany({
           where: {
             userId: ctx.session.user.id,
-            PLOsId: input.PLOs ? input.PLOs : undefined,
-            typeId: input.Types ? input.Types : undefined,
-            courseId: input.Courses ? input.Courses : undefined,
+            PLOsId: input?.PLOs ? input.PLOs : undefined,
+            typeId: input?.Types ? input.Types : undefined,
+            courseId: input?.Courses ? input.Courses : undefined,
           },
           include: {
             user: true,
@@ -38,9 +40,9 @@ export const questionRouter = router({
 
       const questions = await ctx.prisma.question.findMany({
         where: {
-          PLOsId: input.PLOs ? input.PLOs : undefined,
-          typeId: input.Types ? input.Types : undefined,
-          courseId: input.Courses ? input.Courses : undefined,
+          PLOsId: input?.PLOs ? input.PLOs : undefined,
+          typeId: input?.Types ? input.Types : undefined,
+          courseId: input?.Courses ? input.Courses : undefined,
         },
         include: {
           course: true,
@@ -97,16 +99,18 @@ export const questionRouter = router({
     }),
   updateQuestion: publicProcedure
     .input(
-      z.object({
-        id: z.string(),
-        course: z.string(),
-        PLOs: z.string(),
-        CLOs: z.string(),
-        type: z.string(),
-        question: z.string(),
-      })
+      z
+        .object({
+          id: z.string(),
+          course: z.string(),
+          PLOs: z.string(),
+          CLOs: z.string(),
+          type: z.string(),
+          question: z.string(),
+        })
+        .nullish()
     )
-    .mutation(({ input, ctx }) => {
+    .mutation(async ({ input, ctx }) => {
       if (!input) {
         throw new Error("Invalid input");
       }
@@ -115,13 +119,9 @@ export const questionRouter = router({
         throw new Error("You must be logged in to update a question");
       }
 
-      // if (ctx.session.user.role !== "ADMIN") {
-      //   throw new Error("You must be an admin to update a question");
-      // }
-
       const { id, course, PLOs, CLOs, type, question } = input;
 
-      const Q = ctx.prisma.question.update({
+      const Q = await ctx.prisma.question.update({
         where: {
           id,
         },
@@ -145,8 +145,6 @@ export const questionRouter = router({
           question: question,
         },
       });
-
-      return Q;
     }),
 
   deleteQuestion: publicProcedure

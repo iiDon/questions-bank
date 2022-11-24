@@ -14,40 +14,43 @@ import {
   Select,
   useToast,
 } from "@chakra-ui/react";
+import { Question, PLOs, Course, Type } from "@prisma/client";
 import { useFormik } from "formik";
+import { User } from "next-auth";
+import React from "react";
 import { trpc } from "../../../src/utils/trpc";
 
 export interface Props {
   isOpen: boolean;
   onClose: () => void;
+  q: any;
 }
 
-const AddQuestionModal = ({ isOpen, onClose }: Props) => {
+const ViewQuestionModal = ({ isOpen, onClose, q }: Props) => {
   const toast = useToast();
   const { data: PLOs } = trpc.plos.getAll.useQuery();
   const { data: courses } = trpc.course.getAll.useQuery();
   const { data: types } = trpc.type.getAll.useQuery();
-  const { data, refetch } = trpc.question.getAll.useQuery({});
-  const createQuestion = trpc.question.createQuestion.useMutation({
+  const { data: questions, refetch } = trpc.question.getAll.useQuery({});
+  const updateQuestion = trpc.question.updateQuestion.useMutation({
     onSuccess: () => {
       toast({
         position: "top",
-        title: "Question created",
-        description: "Question has been created successfully",
+        title: "Question Updated",
+        description: "Question updated successfully",
         status: "success",
-        duration: 3000,
+        duration: 5000,
         isClosable: true,
       });
       refetch();
-      onClose();
     },
     onError: () => {
       toast({
         position: "top",
         title: "Error",
-        description: createQuestion.error?.message,
+        description: "Error updating question",
         status: "error",
-        duration: 3000,
+        duration: 5000,
         isClosable: true,
       });
     },
@@ -55,14 +58,34 @@ const AddQuestionModal = ({ isOpen, onClose }: Props) => {
 
   const formik = useFormik({
     initialValues: {
-      PLOs: "",
-      course: "",
-      type: "",
-      CLOs: "",
-      question: "",
+      id: q?.id,
+      PLOs: q?.PLOs,
+      course: q?.course.id,
+      type: q?.type.id,
+      CLOs: q?.CLOs,
+      question: q?.question,
     },
-    onSubmit: (values) => {
-      createQuestion.mutate(values);
+    onSubmit: async (values) => {
+      const { PLOs, course, type, CLOs, question } = values;
+      values.id = q?.id;
+      if (values.PLOs === undefined) {
+        values.PLOs = q.PLOs.id;
+      }
+      if (values.course === undefined) {
+        values.course = q.course.id;
+      }
+      if (values.type === undefined) {
+        values.type = q.type.id;
+      }
+      if (values.CLOs === undefined) {
+        values.CLOs = q.CLOs;
+      }
+      if (values.question === undefined) {
+        values.question = q.question;
+      }
+
+      console.log(values);
+      await updateQuestion.mutateAsync(values);
       formik.resetForm();
       onClose();
     },
@@ -74,7 +97,7 @@ const AddQuestionModal = ({ isOpen, onClose }: Props) => {
         <ModalOverlay />
         <form onSubmit={formik.handleSubmit}>
           <ModalContent>
-            <ModalHeader>Add A New Question</ModalHeader>
+            <ModalHeader>View or Edit Question</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <FormControl isRequired>
@@ -84,6 +107,7 @@ const AddQuestionModal = ({ isOpen, onClose }: Props) => {
                   onChange={formik.handleChange}
                   name="course"
                   id="course"
+                  defaultValue={q?.course.id}
                   value={formik.values.course}
                 >
                   {courses?.map((course) => {
@@ -100,6 +124,7 @@ const AddQuestionModal = ({ isOpen, onClose }: Props) => {
                   onChange={formik.handleChange}
                   name="PLOs"
                   id="PLOs"
+                  defaultValue={q?.PLOs?.id}
                   value={formik.values.PLOs}
                 >
                   {PLOs?.map((plo) => {
@@ -115,6 +140,7 @@ const AddQuestionModal = ({ isOpen, onClose }: Props) => {
                   type="text"
                   id="CLOs"
                   name="CLOs"
+                  defaultValue={q?.CLOs}
                   value={formik.values.CLOs}
                   onChange={formik.handleChange}
                 />
@@ -122,6 +148,7 @@ const AddQuestionModal = ({ isOpen, onClose }: Props) => {
                 <Select
                   placeholder="Select option"
                   onChange={formik.handleChange}
+                  defaultValue={q?.type.id}
                   name="type"
                   id="type"
                   value={formik.values.type}
@@ -138,6 +165,7 @@ const AddQuestionModal = ({ isOpen, onClose }: Props) => {
                 <Textarea
                   id="question"
                   name="question"
+                  defaultValue={q?.question}
                   value={formik.values.question}
                   onChange={formik.handleChange}
                 />
@@ -146,7 +174,7 @@ const AddQuestionModal = ({ isOpen, onClose }: Props) => {
 
             <ModalFooter>
               <Button mr={3} bg="sky" textColor="white" type="submit">
-                Submit
+                Update
               </Button>
               <Button onClick={onClose}>Close</Button>
             </ModalFooter>
@@ -157,4 +185,4 @@ const AddQuestionModal = ({ isOpen, onClose }: Props) => {
   );
 };
 
-export default AddQuestionModal;
+export default ViewQuestionModal;

@@ -17,16 +17,23 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React from "react";
-import { trpc } from "../../../src/utils/trpc";
-import AddQuestionModal from "./AddQuestionModal";
-import DeleteQuestionModal from "./DeleteQuestionModal";
-import * as XLSX from 'xlsx'
+
+import { trpc } from "../../../../src/utils/trpc";
+
+import AddQuestionModal from "../AddQuestionModal";
+import DeleteQuestionModal from "../DeleteQuestionModal";
+import * as XLSX from "xlsx";
 import Link from "next/link";
-import Selector from "./Selector";
-import { AiFillDelete } from 'react-icons/ai'
-import { MdViewWeek } from 'react-icons/md'
-import DeleteOneModal from "./DeleteOneModal";
+import Selector from "../Selector";
+import { AiFillDelete } from "react-icons/ai";
+import { MdViewWeek } from "react-icons/md";
+import DeleteOneModal from "../DeleteOneModal";
+import ViewQuestionModal from "../ViewQuestionModal";
+import TableHeader from "./TableHeader";
+import { handleSelect } from "../../../../Hooks/hooks";
+
 const QuestionsTable = () => {
+  // modals for adding, deleting and updating questions
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [modalId, setModalId] = React.useState("");
   const {
@@ -39,21 +46,35 @@ const QuestionsTable = () => {
     onOpen: onOpenDO,
     onClose: onCloseDO,
   } = useDisclosure();
+
+  const {
+    isOpen: isOpenU,
+    onOpen: onOpenU,
+    onClose: onCloseU,
+  } = useDisclosure();
+  // ===================================================
+
+  // get all questions and slice it and declare filters
   const [sliceStart, setSliceStart] = React.useState(0);
   const [sliceEnd, setSliceEnd] = React.useState(10);
   const { data: PLOs } = trpc.plos.getAll.useQuery();
   const { data: Types } = trpc.type.getAll.useQuery();
   const { data: Courses } = trpc.course.getAll.useQuery();
-
-  const [filterPlos, setFilterPlos] = React.useState<string | undefined>(undefined);
-  const [filterTypes, setFilterTypes] = React.useState<string | undefined>(undefined);
-  const [filterCourses, setFilterCourses] = React.useState<string | undefined>(undefined);
+  const [filterPlos, setFilterPlos] = React.useState<string | undefined>(
+    undefined
+  );
+  const [filterTypes, setFilterTypes] = React.useState<string | undefined>(
+    undefined
+  );
+  const [filterCourses, setFilterCourses] = React.useState<string | undefined>(
+    undefined
+  );
 
   const { data: questions, refetch } = trpc.question.getAll.useQuery({
     PLOs: filterPlos,
     Types: filterTypes,
     Courses: filterCourses,
-  })
+  });
   const length = questions?.length;
   const createManyQ = trpc.question.createManyQuestions.useMutation({
     onSuccess: () => {
@@ -62,8 +83,8 @@ const QuestionsTable = () => {
     },
   });
 
-
   const [selected, setSelected] = React.useState<string[]>([]);
+  const [questionModal, setQuestion] = React.useState();
 
   const dataExport = questions?.map((question) => {
     return {
@@ -72,22 +93,11 @@ const QuestionsTable = () => {
       PLOs: question.PLOs?.name,
       Types: question.type.name,
       Courses: question.course.name,
-
     };
   });
 
-  const handleSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, checked } = e.target;
-    if (checked) {
-      setSelected([...selected, value]);
-    } else {
-      setSelected(selected.filter((item) => item !== value));
-    }
-  };
-
   const handleExport = () => {
     const wb = XLSX.utils.book_new();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const ws = XLSX.utils.json_to_sheet(dataExport!);
     XLSX.utils.book_append_sheet(wb, ws, "Questions");
     XLSX.writeFile(wb, "Questions.xlsx");
@@ -101,22 +111,18 @@ const QuestionsTable = () => {
       const data = e.target?.result;
       const workbook = XLSX.read(data, { type: "binary" });
       const wsname = workbook.SheetNames[0];
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const ws = workbook.Sheets[wsname!];
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const dataParse: any = XLSX.utils.sheet_to_json(ws!, { header: 2 });
       console.log(dataParse);
       createManyQ.mutateAsync(dataParse);
     };
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     reader.readAsBinaryString(file!);
-
-
   };
 
-
-
-
+  const handleUpdate = (question: any) => {
+    setQuestion(question);
+    onOpenU();
+  };
 
   return (
     <VStack w="90%">
@@ -128,17 +134,36 @@ const QuestionsTable = () => {
         setQuestions={setSelected}
       />
       <DeleteOneModal isOpen={isOpenDO} onClose={onCloseDO} id={modalId} />
-      <Flex w="100%" justifyContent='space-between'>
+      <ViewQuestionModal
+        isOpen={isOpenU}
+        onClose={onCloseU}
+        q={questionModal}
+      />
+      <Flex w="100%" justifyContent="space-between">
         <Flex>
           <Button shadow="md" onClick={onOpen}>
             Add A Question
           </Button>
 
-          <Input disabled={createManyQ.isLoading} type="file" id="file" display='none' onChange={handleImport} />
-          <FormLabel htmlFor="file" rounded="md" p={2} shadow="md" bg="gray.100" mx={2} cursor="pointer" _hover={{ bg: "gray.200" }}>
+          <Input
+            disabled={createManyQ.isLoading}
+            type="file"
+            id="file"
+            display="none"
+            onChange={handleImport}
+          />
+          <FormLabel
+            htmlFor="file"
+            rounded="md"
+            p={2}
+            shadow="md"
+            bg="gray.100"
+            mx={2}
+            cursor="pointer"
+            _hover={{ bg: "gray.200" }}
+          >
             Import
           </FormLabel>
-
 
           <Button shadow="md" ml={2} onClick={handleExport}>
             Export
@@ -153,31 +178,25 @@ const QuestionsTable = () => {
             Delete
           </Button>
           <Selector placeholder="PLOs" options={PLOs} setter={setFilterPlos} />
-          <Selector placeholder="Types" options={Types} setter={setFilterTypes} />
-          <Selector placeholder="Courses" options={Courses} setter={setFilterCourses} />
+          <Selector
+            placeholder="Types"
+            options={Types}
+            setter={setFilterTypes}
+          />
+          <Selector
+            placeholder="Courses"
+            options={Courses}
+            setter={setFilterCourses}
+          />
         </Flex>
 
-
         <Link href="/dashboard">
-          <Button shadow="md">
-            Back
-          </Button>
+          <Button shadow="md">Back</Button>
         </Link>
       </Flex>
       <TableContainer w="100%" bg="gray.100" rounded="md" shadow="md">
         <Table size="sm">
-          <Thead>
-            <Tr h={12} bg="gray.200" >
-              <Th textAlign="center" w="1%"></Th>
-              <Th w="1%">N</Th>
-              <Th>Item</Th>
-              <Th>CLO</Th>
-              <Th>PLO</Th>
-              <Th>Type</Th>
-              <Th>Course</Th>
-              <Th w="1%">Actions</Th>
-            </Tr>
-          </Thead>
+          <TableHeader />
           <Tbody>
             {questions?.slice(sliceStart, sliceEnd)?.map((question, index) => (
               <Tr
@@ -191,7 +210,7 @@ const QuestionsTable = () => {
                   <Checkbox
                     borderColor="gray.400"
                     value={question.id}
-                    onChange={handleSelect}
+                    onChange={(e) => handleSelect(e, setSelected, selected)}
                   />
                 </Td>
                 <Td w="auto">{sliceStart + index + 1}</Td>
@@ -201,14 +220,25 @@ const QuestionsTable = () => {
                 <Td>{question.type.name}</Td>
                 <Td>{question.course.name}</Td>
                 <Td w="auto">
-                  <Flex justifyContent='space-between'>
-                    <Box _hover={{ bg: "gray.100" }} p={1} rounded='md' onClick={() => {
-                      setModalId(question.id)
-                      onOpenDO()
-                    }}>
-                      <AiFillDelete size={24} color='red' />
+                  <Flex justifyContent="space-between">
+                    <Box
+                      _hover={{ bg: "gray.100" }}
+                      p={1}
+                      rounded="md"
+                      onClick={() => {
+                        setModalId(question.id);
+                        onOpenDO();
+                      }}
+                    >
+                      {/* Delete */}
+                      <AiFillDelete size={24} color="red" />
                     </Box>
-                    <Box _hover={{ bg: "gray.200" }} p={1} >
+                    {/* Update */}
+                    <Box
+                      _hover={{ bg: "gray.200" }}
+                      p={1}
+                      onClick={() => handleUpdate(question)}
+                    >
                       <MdViewWeek size={24} color="#5E91F8" />
                     </Box>
                   </Flex>
@@ -217,31 +247,53 @@ const QuestionsTable = () => {
             ))}
           </Tbody>
         </Table>
-        {
-          length === 0 && <Text my={16} ml={2} textAlign='center' fontWeight='bold' fontSize='xl'>
+        {length === 0 && (
+          <Text
+            my={16}
+            ml={2}
+            textAlign="center"
+            fontWeight="bold"
+            fontSize="xl"
+          >
             There is no question to show
           </Text>
-        }
-        <Flex w="100%" my={2} justifyContent="center" alignItems='center'>
-          <Button bg="sky" color="white" mx={2} w={24} onClick={() => {
-            if (sliceStart > 0) {
-              setSliceStart(sliceStart - 10);
-              setSliceEnd(sliceEnd - 10);
-            }
-          }}>
+        )}
+        <Flex w="100%" my={2} justifyContent="center" alignItems="center">
+          <Button
+            bg="sky"
+            color="white"
+            mx={2}
+            w={24}
+            onClick={() => {
+              if (sliceStart > 0) {
+                setSliceStart(sliceStart - 10);
+                setSliceEnd(sliceEnd - 10);
+              }
+            }}
+          >
             Previous
           </Button>
           {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          length! > 0 && <Text>{sliceStart + 1} - {sliceEnd} of {questions?.length}</Text>
-          }
-          <Button bg="sky" color="white" mx={2} w={24} onClick={() => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            if (sliceEnd < length!) {
-              setSliceStart(sliceStart + 10);
-              setSliceEnd(sliceEnd + 10);
-            }
-          }}>
+            length! > 0 && (
+              <Text>
+                {sliceStart + 1} - {sliceEnd} of {questions?.length}
+              </Text>
+            )
+          }
+          <Button
+            bg="sky"
+            color="white"
+            mx={2}
+            w={24}
+            onClick={() => {
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              if (sliceEnd < length!) {
+                setSliceStart(sliceStart + 10);
+                setSliceEnd(sliceEnd + 10);
+              }
+            }}
+          >
             Next
           </Button>
         </Flex>

@@ -12,8 +12,8 @@ interface Props {
 const Selector = (Props: Props) => {
     const options = Props.options?.map((option: { id: string; name: string; }) => {
         return {
-            value: option.id,
-            label: option.name,
+          value: option.id,
+          label: option.name.substring(0, 7),
         };
     });
 

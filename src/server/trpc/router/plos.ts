@@ -111,4 +111,25 @@ export const plosRouter = router({
 
       return plo;
     }),
+  // createManyPLOs: publicProcedure
+  //   .input(
+  //     z.array(
+  //       z.object({
+  //         name: z.string(),
+  //       })
+  //     )
+  //   )
+  //   .mutation(async ({ input, ctx }) => {
+  //     if (!input) {
+  //       throw new Error("Invalid input");
+  //     }
+
+  //     for (const name of input) {
+  //       await ctx.prisma.pLOs.create({
+  //         data: {
+  //           name: name.name,
+  //         },
+  //       });
+  //     }
+  //   }),
 });

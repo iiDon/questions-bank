@@ -83,6 +83,12 @@ const QuestionsTable = () => {
     },
   });
 
+  // const createManyPlos = trpc.plos.createManyPLOs.useMutation({
+  //   onSuccess: () => {
+  //     console.log("success");
+  //     refetch();
+  //   },
+  // });
   const [selected, setSelected] = React.useState<string[]>([]);
   const [questionModal, setQuestion] = React.useState();
 
@@ -216,7 +222,7 @@ const QuestionsTable = () => {
                 <Td w="auto">{sliceStart + index + 1}</Td>
                 <Td>{question.question.substring(0, 20) + "..."}</Td>
                 <Td>{question.CLOs}</Td>
-                <Td>{question.PLOs?.name}</Td>
+                <Td>{question.PLOs?.name.substring(0, 7)}</Td>
                 <Td>{question.type.name}</Td>
                 <Td>{question.course.name}</Td>
                 <Td w="auto">
@@ -229,6 +235,7 @@ const QuestionsTable = () => {
                         setModalId(question.id);
                         onOpenDO();
                       }}
+                      
                     >
                       {/* Delete */}
                       <AiFillDelete size={24} color="red" />

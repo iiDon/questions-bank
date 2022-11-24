@@ -105,7 +105,7 @@ const AddQuestionModal = ({ isOpen, onClose }: Props) => {
                   {PLOs?.map((plo) => {
                     return (
                       <option value={plo.id} key={plo.id}>
-                        {plo.name}
+                        {plo.name.substring(0, 7)}
                       </option>
                     );
                   })}

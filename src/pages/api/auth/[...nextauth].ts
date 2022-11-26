@@ -13,11 +13,10 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
       type: "credentials",
       credentials: {},
-      async authorize(credentials, req) {
-        const { email, password, role } = credentials as {
+      async authorize(credentials) {
+        const { email, password } = credentials as {
           email: string;
           password: string;
-          role: string;
         };
         const user = await prisma.user.findUnique({
           where: {

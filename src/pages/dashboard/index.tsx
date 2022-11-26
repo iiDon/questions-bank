@@ -2,7 +2,6 @@ import { Box, Flex, Grid, GridItem, useDisclosure } from "@chakra-ui/react";
 import { getSession, useSession } from "next-auth/react";
 import AddQuestionModal from "../../../components/Dashboard/Questions/AddQuestionModal";
 import Header from "../../../components/Dashboard/Header";
-import Unauthenticated from "../../../components/Unauthenticated";
 import AddQuestion from "../../../components/Dashboard/Questions/AddQuestion";
 import ViewQuestions from "../../../components/Dashboard/Questions/ViewQuestions";
 import AddUsers from "../../../components/Dashboard/Users/AddUsers";
@@ -13,8 +12,16 @@ import AddType from "../../../components/Dashboard/Types/AddType";
 import AddCourse from "../../../components/Dashboard/Courses/AddCourse";
 import ViewCourses from "../../../components/Dashboard/Courses/ViewCourse";
 import ViewTypes from "../../../components/Dashboard/Types/ViewTypes";
+import { useRouter } from "next/router";
 const Home = () => {
-  const { status, data: session } = useSession();
+  const router = useRouter();
+  const { status, data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push("/auth/signin");
+    },
+    
+  });
 
   const { onOpen, isOpen, onClose } = useDisclosure();
 
@@ -22,9 +29,7 @@ const Home = () => {
     return <p>Loading...</p>;
   }
 
-  if (status === "unauthenticated") {
-    return <Unauthenticated />;
-  }
+
 
   return (
     <>

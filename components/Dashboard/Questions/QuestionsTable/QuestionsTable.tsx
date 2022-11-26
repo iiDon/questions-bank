@@ -1,9 +1,7 @@
 import {
   TableContainer,
   Table,
-  Thead,
   Tr,
-  Th,
   Tbody,
   Td,
   Checkbox,
@@ -89,6 +87,8 @@ const QuestionsTable = () => {
   //     refetch();
   //   },
   // });
+
+
   const [selected, setSelected] = React.useState<string[]>([]);
   const [questionModal, setQuestion] = React.useState();
 
@@ -235,7 +235,7 @@ const QuestionsTable = () => {
                         setModalId(question.id);
                         onOpenDO();
                       }}
-                      
+
                     >
                       {/* Delete */}
                       <AiFillDelete size={24} color="red" />

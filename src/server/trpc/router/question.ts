@@ -252,7 +252,6 @@ export const questionRouter = router({
       }
 
       const questions = input;
-      console.log(questions);
       for (let question = 0; question < questions.length; question++) {
         // check if the course exists
         const course = await ctx.prisma.course.findFirst({

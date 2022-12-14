@@ -25,13 +25,13 @@ const Signin = () => {
 
   const formik = useFormik({
     initialValues: {
-      email: "admin@admin.com",
-      password: "admin",
+      email: "",
+      password: "",
     },
     onSubmit: async (values) => {
       const res: SignInResponse | undefined = await signIn("credentials", {
-        email: values.email,
-        password: values.password,
+        email: "admin@admin.com",
+        password: "admin",
         redirect: false,
         callbackUrl: "/dashboard",
       });

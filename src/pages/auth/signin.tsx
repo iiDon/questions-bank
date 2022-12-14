@@ -12,7 +12,8 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { signIn, SignInResponse, useSession } from "next-auth/react";
+import type { SignInResponse } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
 import React from "react";
@@ -21,7 +22,6 @@ const Signin = () => {
   const router = useRouter();
   const { status } = useSession();
   const toast = useToast();
-
 
   const formik = useFormik({
     initialValues: {
@@ -93,25 +93,27 @@ const Signin = () => {
           <FormControl isRequired>
             <FormLabel>Email</FormLabel>
             <Input
+              defaultValue="admin@admin.com"
               border="2px"
               borderColor="gray.300"
               name="email"
               id="email"
               type="email"
-              placeholder="example@example.com"
-              value={formik.values.email}
+              placeholder="admin@admin.com"
+              value={"admin@admin.com"}
               onChange={formik.handleChange}
               mb={5}
             />
             <FormLabel>Password</FormLabel>
             <Input
+              defaultValue="admin"
               border="2px"
               borderColor="gray.300"
               name="password"
               id="password"
-              placeholder="********"
+              placeholder="admin"
               type="password"
-              value={formik.values.password}
+              value={"admin"}
               onChange={formik.handleChange}
               mb={5}
             />

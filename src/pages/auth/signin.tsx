@@ -31,6 +31,7 @@ const Signin = () => {
     onSubmit: async (values) => {
       values.email = "admin@admin.com";
       values.password = "admin";
+      console.log(values);
       const res: SignInResponse | undefined = await signIn("credentials", {
         email: values.email,
         password: values.password,

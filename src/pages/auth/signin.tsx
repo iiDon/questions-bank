@@ -25,13 +25,15 @@ const Signin = () => {
 
   const formik = useFormik({
     initialValues: {
-      email: "",
-      password: "",
+      email: "admin@admin.com",
+      password: "admin@admin.com",
     },
     onSubmit: async (values) => {
+      values.email = "admin@admin.com";
+      values.password = "admin";
       const res: SignInResponse | undefined = await signIn("credentials", {
-        email: "admin@admin.com",
-        password: "admin",
+        email: values.email,
+        password: values.password,
         redirect: false,
         callbackUrl: "/dashboard",
       });
@@ -101,7 +103,7 @@ const Signin = () => {
               type="email"
               placeholder="admin@admin.com"
               value={"admin@admin.com"}
-              onChange={formik.handleChange}
+              // onChange={formik.handleChange}
               mb={5}
             />
             <FormLabel>Password</FormLabel>
@@ -114,7 +116,7 @@ const Signin = () => {
               placeholder="admin"
               type="password"
               value={"admin"}
-              onChange={formik.handleChange}
+              // onChange={formik.handleChange}
               mb={5}
             />
 
